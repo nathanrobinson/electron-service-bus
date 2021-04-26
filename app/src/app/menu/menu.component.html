@@ -1,0 +1,56 @@
+<mat-tree [dataSource]="nodes" [treeControl]="treeControl">
+  <mat-tree-node
+    *matTreeNodeDef="let node"
+    matTreeNodePadding
+    matTreeNodePaddingIndent="10"
+  >
+    <button mat-icon-button disabled></button>
+    <button
+      mat-flat-button
+      *ngIf="node.routable"
+      [routerLink]="node.item.id"
+      [state]="{ data: node.item }"
+      [matTooltip]="node.item.tooltip"
+    >
+      <mat-icon color="primary">{{ node.item.icon }}</mat-icon>
+      {{ node.item.label }}
+    </button>
+    <span *ngIf="!node.routable" [matTooltip]="node.item.tooltip">
+      <mat-icon color="primary">{{ node.item.icon }}</mat-icon>
+      {{ node.item.label }}
+    </span>
+  </mat-tree-node>
+  <mat-tree-node
+    *matTreeNodeDef="let node; when: hasChild"
+    matTreeNodePadding
+    matTreeNodePaddingIndent="10"
+  >
+    <button
+      mat-icon-button
+      [attr.aria-label]="'Toggle ' + node.item.label"
+      matTreeNodeToggle
+    >
+      <mat-icon color="accent" class="mat-icon-rtl-mirror">
+        {{ treeControl.isExpanded(node) ? "expand_more" : "chevron_right" }}
+      </mat-icon>
+    </button>
+    <button
+      mat-flat-button
+      *ngIf="node.routable"
+      [routerLink]="node.item.id"
+      [state]="{ data: node.item }"
+      [matTooltip]="node.item.tooltip"
+    >
+      <mat-icon color="primary">{{ node.item.icon }}</mat-icon>
+      {{ node.item.label }}
+    </button>
+    <span *ngIf="!node.routable" [matTooltip]="node.item.tooltip">
+      <mat-icon color="primary">{{ node.item.icon }}</mat-icon>
+      {{ node.item.label }}
+    </span>
+    <mat-progress-spinner
+      *ngIf="node.isLoading"
+      mode="indeterminate"
+    ></mat-progress-spinner>
+  </mat-tree-node>
+</mat-tree>

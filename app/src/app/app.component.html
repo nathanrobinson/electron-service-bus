@@ -1,0 +1,34 @@
+<div class="esb-wrapper" [class.esb-dark-theme]="darkMode">
+  <mat-toolbar color="primary">
+    <button
+      mat-icon-button
+      (click)="sidebar.toggle()"
+      aria-label="Toggle the sidebar"
+    >
+      <mat-icon>menu</mat-icon>
+    </button>
+    <span>{{ title }}</span>
+    <span class="esb-spacer"></span>
+    <span *ngIf="loggedIn$ | async; else elseBlock">{{
+      username$ | async
+    }}</span>
+    <ng-template #elseBlock>
+      <button mat-icon-button aria-label="Login" (click)="login($event)">
+        <mat-icon>login</mat-icon>
+      </button>
+    </ng-template>
+    <span class="esb-spacer-small"></span>
+    <mat-slide-toggle [(ngModel)]="darkMode">Dark Mode</mat-slide-toggle>
+  </mat-toolbar>
+
+  <mat-sidenav-container>
+    <mat-sidenav #sidebar mode="side" opened class="esb-menu-backdrop">
+      <esb-menu></esb-menu>
+    </mat-sidenav>
+    <mat-sidenav-content>
+      <article>
+        <router-outlet></router-outlet>
+      </article>
+    </mat-sidenav-content>
+  </mat-sidenav-container>
+</div>

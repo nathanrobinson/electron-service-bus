@@ -1,0 +1,23 @@
+.esb-menu-backdrop {
+  background-color: rgba($color: #000000, $alpha: 0.5);
+  border-right: 1px solid black;
+  width: 350px;
+  overflow: auto;
+}
+.esb-spacer {
+  flex: 1 1 auto;
+}
+.esb-spacer-small {
+  width: 5em;
+}
+.esb-wrapper {
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+mat-sidenav-container {
+  flex-grow: 1;
+}
