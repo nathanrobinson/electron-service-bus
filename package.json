@@ -1,0 +1,24 @@
+{
+  "name": "electron-service-bus",
+  "version": "1.0.0",
+  "description": "Electron Service Bus Explorer",
+  "main": "build/index.js",
+  "author": "Nathan J. Robinson",
+  "license": "MIT",
+  "scripts": {
+    "compile": "cd app && ng build app && cd .. && tsc",
+    "start": "yarn compile && electron ./app/dist/app"
+  },
+  "devDependencies": {
+    "typescript": "^4.2.4"
+  },
+  "dependencies": {
+    "@azure/arm-servicebus": "^4.0.0",
+    "@azure/arm-subscriptions": "^3.0.0",
+    "@azure/identity": "^1.3.0",
+    "@azure/ms-rest-js": "^2.4.0",
+    "@azure/service-bus": "^7.0.5",
+    "electron": "^12.0.5",
+    "jwt-decode": "^3.1.2"
+  }
+}
