@@ -1,4 +1,4 @@
-import { CustomNode } from "../models/custom-node";
+import { CustomNode } from "../_models/custom-node";
 
 export class DynamicMenuNode {
     constructor(

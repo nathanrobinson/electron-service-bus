@@ -1,14 +1,14 @@
 import { Injectable } from '@angular/core';
 import { from, Observable, of } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
-import { CustomNode } from '../models/custom-node';
-import { NamespaceNode } from '../models/namespace-node';
-import { NamespaceQueuesNode } from '../models/namespace-queues-node';
-import { NamespaceTopicsNode } from '../models/namespace-topics-node';
-import { QueueNode } from '../models/queue-node';
-import { SubscriptionNode } from '../models/subscription-node';
-import { TopicNode } from '../models/topic-node';
-import { TopicSubscriptionNode } from '../models/topic-subscription-node';
+import { CustomNode } from '../_models/custom-node';
+import { NamespaceNode } from '../_models/namespace-node';
+import { NamespaceQueuesNode } from '../_models/namespace-queues-node';
+import { NamespaceTopicsNode } from '../_models/namespace-topics-node';
+import { QueueNode } from '../_models/queue-node';
+import { SubscriptionNode } from '../_models/subscription-node';
+import { TopicNode } from '../_models/topic-node';
+import { TopicSubscriptionNode } from '../_models/topic-subscription-node';
 import { ServiceBusManagementService } from './service-bus-management.service';
 import { TenantSubscriptionService } from './tenant-subscription.service';
 

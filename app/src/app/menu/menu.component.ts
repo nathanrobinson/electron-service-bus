@@ -2,12 +2,12 @@ import { FlatTreeControl } from '@angular/cdk/tree';
 import { Component, OnInit } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { filter, switchMap } from 'rxjs/operators';
-import { CustomNode } from '../models/custom-node';
-import { QueueNode } from '../models/queue-node';
-import { TopicNode } from '../models/topic-node';
-import { TopicSubscriptionNode } from '../models/topic-subscription-node';
-import { AuthServiceService } from '../services/auth-service.service';
-import { TenantSubscriptionNamespaceService } from '../services/tenant-subscription-namespace.service';
+import { CustomNode } from '../_models/custom-node';
+import { QueueNode } from '../_models/queue-node';
+import { TopicNode } from '../_models/topic-node';
+import { TopicSubscriptionNode } from '../_models/topic-subscription-node';
+import { AuthServiceService } from '../_services/auth-service.service';
+import { TenantSubscriptionNamespaceService } from '../_services/tenant-subscription-namespace.service';
 import { DynamicMenuNode } from './menu-node';
 import { MenuDataSource } from './menu.data-source';
 

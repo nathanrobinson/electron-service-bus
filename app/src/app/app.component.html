@@ -18,7 +18,9 @@
       </button>
     </ng-template>
     <span class="esb-spacer-small"></span>
-    <mat-slide-toggle [(ngModel)]="darkMode">Dark Mode</mat-slide-toggle>
+    <mat-slide-toggle [(ngModel)]="darkMode"
+      >{{ !!darkMode ? "Dark" : "Light" }} Mode</mat-slide-toggle
+    >
   </mat-toolbar>
 
   <mat-sidenav-container>

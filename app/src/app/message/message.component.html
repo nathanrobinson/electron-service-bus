@@ -1,1 +1,60 @@
-<p>message works!</p>
+<mat-card class="message-card" *ngIf="!message">
+  <mat-card-header>
+    <mat-card-title>Service Bus Message</mat-card-title>
+  </mat-card-header>
+</mat-card>
+<mat-card class="message-card" *ngIf="!!message">
+  <mat-card-header>
+    <mat-card-title>Service Bus Message</mat-card-title>
+  </mat-card-header>
+  <mat-card-content>
+    <div class="example-action-buttons">
+      <button mat-button (click)="accordion.openAll()">Expand All</button>
+      <button mat-button (click)="accordion.closeAll()">Collapse All</button>
+    </div>
+    <mat-accordion
+      #accordion="matAccordion"
+      class="example-headers-align"
+      multi
+    >
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title> Message Properties </mat-panel-title>
+        </mat-expansion-panel-header>
+        <div fxLayout="row wrap" fxLayout.md="column" fxLayoutGap="10px">
+          <ng-container *ngFor="let property of message | keyvalue">
+            <mat-form-field
+              appearance="fill"
+              *ngIf="
+                property.key !== 'brokerProperties' && property.key !== 'body'
+              "
+            >
+              <mat-label>{{ property.key }}</mat-label>
+              <input disabled matInput [value]="property.value" />
+            </mat-form-field>
+          </ng-container>
+        </div>
+      </mat-expansion-panel>
+      <mat-expansion-panel *ngIf="!!message.brokerProperties">
+        <mat-expansion-panel-header>
+          <mat-panel-title> Broker Properties </mat-panel-title>
+        </mat-expansion-panel-header>
+        <div fxLayout="row wrap" fxLayout.md="column" fxLayoutGap="10px">
+          <mat-form-field
+            appearance="fill"
+            *ngFor="let property of message.brokerProperties | keyvalue"
+          >
+            <mat-label>{{ property.key }}</mat-label>
+            <input disabled matInput [value]="property.value" />
+          </mat-form-field>
+        </div>
+      </mat-expansion-panel>
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title> Message Body </mat-panel-title>
+        </mat-expansion-panel-header>
+        <pre>{{ message.body | json }}</pre>
+      </mat-expansion-panel>
+    </mat-accordion>
+  </mat-card-content>
+</mat-card>

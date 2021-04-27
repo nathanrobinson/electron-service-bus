@@ -1,10 +1,6 @@
-import { Injectable } from '@angular/core';
-import { ServiceBusClient } from '@azure/service-bus';
-import { CredentialsService } from '../../../../src/services/credentials.service';
+import { ServiceBusClient, ServiceBusReceivedMessage } from '@azure/service-bus';
+import { CredentialsService } from './credentials.service';
 
-@Injectable({
-  providedIn: 'root'
-})
 export class ServiceBusClientService {
   constructor(private _credentialProvider: CredentialsService) { }
 
@@ -15,7 +11,7 @@ export class ServiceBusClientService {
       (this._clients[namespace] = new ServiceBusClient(`https://${namespace}.servicebus.windows.net`, this._credentialProvider.getCredentials()));
   }
 
-  async peekQueue(queueId: string, count: number): Promise<string[]> {
+  async peekQueue(queueId: string, count: number): Promise<ServiceBusReceivedMessage[]> {
     const id = queueId || '';
     var paths = id.split('/');
     const namespaceName = paths[8];
@@ -30,10 +26,10 @@ export class ServiceBusClientService {
     var client = this.getClient(namespaceName);
     var receiver = client.createReceiver(queueName);
     var messages = await receiver.peekMessages(count);
-    return messages?.map(m => m.body || '');
+    return messages;
   }
 
-  async peekSubscription(subscriptionId: string, count: number): Promise<string[]> {
+  async peekSubscription(subscriptionId: string, count: number): Promise<ServiceBusReceivedMessage[]> {
     const id = subscriptionId || '';
     var paths = id.split('/');
     const namespaceName = paths[8];
@@ -54,6 +50,6 @@ export class ServiceBusClientService {
     var client = this.getClient(namespaceName);
     var receiver = client.createReceiver(topicName, subscriptionName);
     var messages = await receiver.peekMessages(count);
-    return messages?.map(m => m.body || '');
+    return messages;
   }
 }

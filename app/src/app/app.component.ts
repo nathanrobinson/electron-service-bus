@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { map } from 'rxjs/operators';
-import { AuthServiceService } from './services/auth-service.service';
+import { AuthServiceService } from './_services/auth-service.service';
 
 @Component({
   selector: 'esb-root',

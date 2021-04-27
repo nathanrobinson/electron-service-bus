@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { Subscription } from '@azure/arm-subscriptions/esm/models';
 import { EMPTY, Observable, of } from 'rxjs';
 import { expand, map, reduce, tap, timeout } from 'rxjs/operators';
-import { INextLink } from '../models/next-link';
+import { INextLink } from '../_models/next-link';
 
 @Injectable({
   providedIn: 'root'

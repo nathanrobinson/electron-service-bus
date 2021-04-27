@@ -3,11 +3,11 @@ import { FlatTreeControl } from "@angular/cdk/tree";
 import { MatSnackBar } from "@angular/material/snack-bar";
 import { BehaviorSubject, Observable, merge } from "rxjs";
 import { map } from "rxjs/operators";
-import { CustomNode } from "../models/custom-node";
-import { QueueNode } from "../models/queue-node";
-import { TopicNode } from "../models/topic-node";
-import { TopicSubscriptionNode } from "../models/topic-subscription-node";
-import { TenantSubscriptionNamespaceService } from "../services/tenant-subscription-namespace.service";
+import { CustomNode } from "../_models/custom-node";
+import { QueueNode } from "../_models/queue-node";
+import { TopicNode } from "../_models/topic-node";
+import { TopicSubscriptionNode } from "../_models/topic-subscription-node";
+import { TenantSubscriptionNamespaceService } from "../_services/tenant-subscription-namespace.service";
 import { DynamicMenuNode } from "./menu-node";
 
 export class MenuDataSource implements DataSource<DynamicMenuNode> {

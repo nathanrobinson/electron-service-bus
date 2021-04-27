@@ -3,8 +3,8 @@ import { Injectable } from '@angular/core';
 import { SBNamespace, SBQueue, SBSubscription, SBTopic } from '@azure/arm-servicebus/esm/models';
 import { EMPTY, Observable, of } from 'rxjs';
 import { expand, map, reduce, tap, timeout } from 'rxjs/operators';
-import { INextLink } from '../models/next-link';
-import { IProperties } from '../models/properties';
+import { INextLink } from '../_models/next-link';
+import { IProperties } from '../_models/properties';
 
 @Injectable({
   providedIn: 'root'

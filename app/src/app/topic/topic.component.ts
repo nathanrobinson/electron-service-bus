@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { SBTopic } from '@azure/arm-servicebus/esm/models';
-import { IProperties } from '../models/properties';
+import { IProperties } from '../_models/properties';
 
 @Component({
   selector: 'esb-topic',
