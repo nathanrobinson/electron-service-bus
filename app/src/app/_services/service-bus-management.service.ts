@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { SBNamespace, SBQueue, SBSubscription, SBTopic } from '@azure/arm-servicebus/esm/models';
 import { EMPTY, Observable, of } from 'rxjs';
-import { expand, map, reduce, tap, timeout } from 'rxjs/operators';
+import { catchError, expand, map, reduce, tap, timeout } from 'rxjs/operators';
 import { INextLink } from '../_models/next-link';
 import { IProperties } from '../_models/properties';
 
@@ -29,12 +29,15 @@ export class ServiceBusManagementService {
       return this._httpClient.get<INextLink<SBNamespace>>(uri, {params: {'api-version': this._apiVersion}})
         .pipe(
           timeout(10000),
-          expand(s => !!s.nextLink ? this._httpClient.get<INextLink<SBNamespace>>(s.nextLink) : EMPTY),
-          map(s => s.value),
+          expand(s => !!s?.nextLink ? this._httpClient.get<INextLink<SBNamespace>>(s.nextLink) : EMPTY),
+          map(s => s?.value),
           reduce((acc, value) => {
-            acc.push(...value);
+            if (!!value) {
+              acc.push(...value);
+            }
             return acc;
           }, new Array<SBNamespace>()),
+          catchError(error => {console.error(error); return [];}),
           tap(s => this._namespaces[subscriptionId] = s));
     }
     return of(this._namespaces[subscriptionId] || []);
@@ -51,10 +54,12 @@ export class ServiceBusManagementService {
     return this._httpClient.get<INextLink<IProperties<SBTopic>>>(uri, {params: {'api-version': this._apiVersion}})
       .pipe(
         timeout(10000),
-        expand(s => !!s.nextLink ? this._httpClient.get<INextLink<IProperties<SBTopic>>>(s.nextLink) : EMPTY),
-        map(s => s.value),
+        expand(s => !!s?.nextLink ? this._httpClient.get<INextLink<IProperties<SBTopic>>>(s.nextLink) : EMPTY),
+        map(s => s?.value),
         reduce((acc, value) => {
-          acc.push(...value);
+          if (!!value) {
+            acc.push(...value);
+          }
           return acc;
         }, new Array<IProperties<SBTopic>>()));
   }
@@ -69,12 +74,15 @@ export class ServiceBusManagementService {
     return this._httpClient.get<INextLink<IProperties<SBQueue>>>(uri, {params: {'api-version': this._apiVersion}})
       .pipe(
         timeout(10000),
-        expand(s => !!s.nextLink ? this._httpClient.get<INextLink<IProperties<SBQueue>>>(s.nextLink) : EMPTY),
-        map(s => s.value),
+        expand(s => !!s?.nextLink ? this._httpClient.get<INextLink<IProperties<SBQueue>>>(s.nextLink) : EMPTY),
+        map(s => s?.value),
         reduce((acc, value) => {
-          acc.push(...value);
+          if (!!value) {
+            acc.push(...value);
+          }
           return acc;
-        }, new Array<IProperties<SBQueue>>()));
+        }, new Array<IProperties<SBQueue>>()),
+        catchError(error => {console.error(error); return [];}));
   }
 
   getTopicSubscriptions(topicId: string | undefined): Observable<Array<IProperties<SBSubscription>>> {
@@ -87,11 +95,14 @@ export class ServiceBusManagementService {
     return this._httpClient.get<INextLink<IProperties<SBSubscription>>>(uri, {params: {'api-version': this._apiVersion}})
       .pipe(
         timeout(10000),
-        expand(s => !!s.nextLink ? this._httpClient.get<INextLink<IProperties<SBSubscription>>>(s.nextLink) : EMPTY),
-        map(s => s.value),
+        expand(s => !!s?.nextLink ? this._httpClient.get<INextLink<IProperties<SBSubscription>>>(s.nextLink) : EMPTY),
+        map(s => s?.value),
         reduce((acc, value) => {
-          acc.push(...value);
+          if (!!value) {
+            acc.push(...value);
+          }
           return acc;
-        }, new Array<IProperties<SBSubscription>>()));
+        }, new Array<IProperties<SBSubscription>>()),
+        catchError(error => {console.error(error); return [];}));
   }
 }

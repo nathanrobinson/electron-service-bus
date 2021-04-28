@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Subscription } from '@azure/arm-subscriptions/esm/models';
 import { EMPTY, Observable, of } from 'rxjs';
-import { expand, map, reduce, tap, timeout } from 'rxjs/operators';
+import { catchError, expand, map, reduce, tap, timeout } from 'rxjs/operators';
 import { INextLink } from '../_models/next-link';
 
 @Injectable({
@@ -21,12 +21,15 @@ export class TenantSubscriptionService {
       return this._httpClient.get<INextLink<Subscription>>(this._baseUrl, {params: {'api-version': this._version}})
         .pipe(
           timeout(10000),
-          expand(s => !!s.nextLink ? this._httpClient.get<INextLink<Subscription>>(s.nextLink) : EMPTY),
-          map(s => s.value),
+          expand(s => !!s?.nextLink ? this._httpClient.get<INextLink<Subscription>>(s.nextLink) : EMPTY),
+          map(s => s?.value),
           reduce((acc, value) => {
-            acc.push(...value);
+            if (!!value) {
+              acc.push(...value);
+            }
             return acc;
           }, new Array<Subscription>()),
+          catchError(error => {console.error(error); return [];}),
           tap(s => this._subscriptions = s));
     }
     return of(this._subscriptions);
