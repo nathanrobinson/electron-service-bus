@@ -6,13 +6,14 @@ import { TopicComponent } from './topic/topic.component';
 
 const routes: Routes = [{
   path: 'subscriptions/:subscription/resourceGroups/:resourceGroup/providers/Microsoft.ServiceBus/namespaces/:namespace/topics/:topic',
-  component: TopicComponent
+  component: TopicComponent,
+  children: [{
+    path: 'subscriptions/:topicSubscription',
+    component: SubscriptionComponent
+  }]
 },{
   path: 'subscriptions/:subscription/resourceGroups/:resourceGroup/providers/Microsoft.ServiceBus/namespaces/:namespace/queues/:queue',
   component: QueueComponent
-},{
-  path: 'subscriptions/:subscription/resourceGroups/:resourceGroup/providers/Microsoft.ServiceBus/namespaces/:namespace/topics/:topic/subscriptions/:topicSubscription',
-  component: SubscriptionComponent
 }];
 
 @NgModule({

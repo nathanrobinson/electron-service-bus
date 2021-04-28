@@ -2,7 +2,7 @@ import { Component, EventEmitter, OnInit } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute } from '@angular/router';
 import { SBQueue } from '@azure/arm-servicebus/esm/models';
-import { combineLatest, concat, from, Observable, of, Subject } from 'rxjs';
+import { combineLatest, concat, Observable, of } from 'rxjs';
 import { catchError, concatMap, debounceTime, filter, map, shareReplay } from 'rxjs/operators';
 import { IProperties } from '../_models/properties';
 import { ServiceBusMessage } from '../_models/service-bus-message';
@@ -14,7 +14,8 @@ import { ServiceBusClientService } from '../_services/service-bus-client.service
   styleUrls: ['./queue.component.scss']
 })
 export class QueueComponent implements OnInit {
-  private _action$ = new EventEmitter<{action: 'peek'|'receive', count: number}>();
+  private _action$ = new EventEmitter<{action: 'peek'|'receive', type: 'queue'|'dead-letter', count: number}>();
+  private _target$ = new EventEmitter<'queue'|'dead-letter'>();
   queue$: Observable<IProperties<SBQueue>>;
   queueName$: Observable<string>;
   properties$: Observable<{key: string, value: any}[]>;
@@ -22,6 +23,8 @@ export class QueueComponent implements OnInit {
   messages$: Observable<ServiceBusMessage[]>;
   hasQueue$: Observable<boolean>;
   noQueue$: Observable<boolean>;
+  maxMessages$: Observable<number>;
+  noMessages$: Observable<boolean>;
 
   constructor(serviceBusClient: ServiceBusClientService, route: ActivatedRoute, snack: MatSnackBar) {
     this.queue$ = route.paramMap.pipe(
@@ -51,18 +54,28 @@ export class QueueComponent implements OnInit {
       map(q => this.getProperties(q.properties?.countDetails)));
 
     this.hasQueue$ = this.queue$.pipe(map(q => !!q));
-    this.noQueue$ = concat([of(false), this.hasQueue$]).pipe(map(q => !q));
+    this.noQueue$ = concat(of(true), this.hasQueue$.pipe(map(q => !q)));
     this.queueName$ = this.queue$.pipe(map(q => q.name || ''));
+    this.maxMessages$ = combineLatest([this.queue$, this._target$]).pipe(
+      debounceTime(250),
+      filter(([q, t]) => !!q?.id && !!t),
+      map(([q, t]) => Math.min(
+        (t === 'queue' ?
+          q.properties?.countDetails?.activeMessageCount :
+          q.properties?.countDetails?.deadLetterMessageCount
+        ) || 0,
+        30)));
+    this.noMessages$ =  concat(of(true), this.maxMessages$.pipe(map(m => m <= 0)));
    }
 
   ngOnInit(): void { }
 
-  peek(): void {
-    this._action$.next({action: 'peek', count: 1});
+  receive(action: 'peek'|'receive', type: 'queue'|'dead-letter', count: string): void {
+    this._action$.emit({action, type, count: Number(count)});
   }
 
-  receive(): void {
-    this._action$.next({action: 'receive', count: 1});
+  setTarget(target: 'queue'|'dead-letter') {
+    this._target$.emit(target);
   }
 
   private getProperties(obj: any, ignore?: string): {key: string, value: any}[] {

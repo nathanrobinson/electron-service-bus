@@ -1,5 +1,6 @@
 import { Injectable } from "@angular/core";
 import { AccessToken } from "@azure/identity";
+import { BehaviorSubject, Observable } from "rxjs";
 import { ElectronService } from "./electron.service";
 
 @Injectable({
@@ -8,7 +9,7 @@ import { ElectronService } from "./electron.service";
 export class CredentialsService {
     constructor(private _electronService: ElectronService){}
 
-    private _authToken: {[key: string]: AccessToken | undefined} = {};
+    private _authToken: {[key: string]: Promise<AccessToken|undefined> | undefined} = {};
 
     async getToken(scopes: string | string[]) {
         let key = '';
@@ -19,10 +20,14 @@ export class CredentialsService {
                 key += scope;
             }
         }
-        if ((this._authToken[key]?.expiresOnTimestamp || 0) <= Date.now()) {
-            this._authToken[key] = await this.getTokenRequest(scopes);
+        if (!this._authToken[key]) {
+          this._authToken[key] = this.getTokenRequest(scopes);
         }
-        return this._authToken[key];
+        const token = await this._authToken[key];
+        if ((token?.expiresOnTimestamp || 0) <= Date.now()) {
+            this._authToken[key] = this.getTokenRequest(scopes);
+        }
+        return await this._authToken[key];
     }
 
     private async getTokenRequest(scopes: string | string[]): Promise<AccessToken | undefined> {

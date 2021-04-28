@@ -4,6 +4,5 @@ export interface ServiceBusMessage {
     lockUri: string;
     brokerProperties: IBrokerProperties;
     body: string;
-    priority: string;
-    customer: string;
+    applicationProperties: {[key: string]: string};
 }

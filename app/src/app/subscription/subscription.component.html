@@ -1,2 +1,98 @@
-<h1>Subscription: {{ subscription?.name || "" }}</h1>
-<pre>{{ subscription | json }}</pre>
+<mat-card class="message-card" *ngIf="noSub$ | async">
+  <mat-card-header>
+    <mat-card-title>Service Bus Topic Subscription</mat-card-title>
+  </mat-card-header>
+</mat-card>
+<mat-card class="message-card" *ngIf="hasSub$ | async">
+  <mat-card-header>
+    <mat-card-title>Service Bus Topic Subscription</mat-card-title>
+    <mat-card-subtitle>{{ subName$ | async }}</mat-card-subtitle>
+  </mat-card-header>
+  <mat-card-content>
+    <div class="example-action-buttons">
+      <button mat-button (click)="accordion.openAll()">Expand All</button>
+      <button mat-button (click)="accordion.closeAll()">Collapse All</button>
+    </div>
+    <mat-accordion
+      #accordion="matAccordion"
+      class="example-headers-align"
+      multi
+    >
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title> Subscription Properties </mat-panel-title>
+        </mat-expansion-panel-header>
+        <div fxLayout="row wrap" fxLayout.md="column" fxLayoutGap="10px">
+          <mat-form-field
+            appearance="fill"
+            *ngFor="let property of properties$ | async"
+          >
+            <mat-label>{{ property.key }}</mat-label>
+            <input disabled matInput [value]="property.value" />
+          </mat-form-field>
+        </div>
+      </mat-expansion-panel>
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title> Messages Counts </mat-panel-title>
+        </mat-expansion-panel-header>
+        <div fxLayout="row wrap" fxLayout.md="column" fxLayoutGap="10px">
+          <mat-form-field
+            appearance="fill"
+            *ngFor="let property of countDetails$ | async"
+          >
+            <mat-label>{{ property.key }}</mat-label>
+            <input disabled matInput [value]="property.value" />
+          </mat-form-field>
+        </div>
+      </mat-expansion-panel>
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title> Messages </mat-panel-title>
+        </mat-expansion-panel-header>
+        <mat-button-toggle-group
+          #queueType="matButtonToggleGroup"
+          (change)="setTarget($event.value)"
+        >
+          <mat-button-toggle value="sub" aria-label="Main Queue">
+            Queue
+          </mat-button-toggle>
+          <mat-button-toggle value="dead-letter" aria-label="Dead-Letter Queue">
+            Dead-Letter
+          </mat-button-toggle>
+        </mat-button-toggle-group>
+        <button
+          [disabled]="noMessages$ | async"
+          mat-button
+          color="primary"
+          (click)="receive('peek', queueType.value, messageCount.value)"
+        >
+          Peek
+        </button>
+        <button
+          [disabled]="noMessages$ | async"
+          mat-button
+          color="warn"
+          (click)="receive('receive', queueType.value, messageCount.value)"
+        >
+          Receive/Delete
+        </button>
+        <mat-form-field appearance="fill">
+          <mat-label>Messages</mat-label>
+          <input
+            #messageCount="matInput"
+            matInput
+            type="number"
+            min="1"
+            [max]="maxMessages$ | async"
+            value="1"
+          />
+        </mat-form-field>
+        <esb-message
+          *ngFor="let message of messages$ | async"
+          [message]="message"
+        ></esb-message>
+      </mat-expansion-panel>
+    </mat-accordion>
+  </mat-card-content>
+</mat-card>

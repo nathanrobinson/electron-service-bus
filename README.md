@@ -12,7 +12,8 @@ Before running you should be logged into Azure. To log in via the cli just do `a
 ## Roadmap
 
 1. ~~peek, receive~~, and send messages to/from queues and subscriptions
-2. delete queues, topics, and subscriptions
-3. add and edit queues, topics, and subscriptions
-4. forward queues and subscriptions
-5. edit forward rules
+2. ~~support dead-letter queues~~
+3. delete queues, topics, and subscriptions
+4. add and edit queues, topics, and subscriptions
+5. forward queues and subscriptions
+6. edit forward rules

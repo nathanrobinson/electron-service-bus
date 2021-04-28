@@ -12,10 +12,6 @@
     <div class="example-action-buttons">
       <button mat-button (click)="accordion.openAll()">Expand All</button>
       <button mat-button (click)="accordion.closeAll()">Collapse All</button>
-      <button mat-button color="primary" (click)="peek()">Peek</button>
-      <button mat-button color="warn" (click)="receive()">
-        Receive/Delete
-      </button>
     </div>
     <mat-accordion
       #accordion="matAccordion"
@@ -38,7 +34,7 @@
       </mat-expansion-panel>
       <mat-expansion-panel>
         <mat-expansion-panel-header>
-          <mat-panel-title> Queue Counts </mat-panel-title>
+          <mat-panel-title> Message Counts </mat-panel-title>
         </mat-expansion-panel-header>
         <div fxLayout="row wrap" fxLayout.md="column" fxLayoutGap="10px">
           <mat-form-field
@@ -54,6 +50,44 @@
         <mat-expansion-panel-header>
           <mat-panel-title> Messages </mat-panel-title>
         </mat-expansion-panel-header>
+        <mat-button-toggle-group
+          #queueType="matButtonToggleGroup"
+          (change)="setTarget($event.value)"
+        >
+          <mat-button-toggle value="queue" aria-label="Main Queue">
+            Queue
+          </mat-button-toggle>
+          <mat-button-toggle value="dead-letter" aria-label="Dead-Letter Queue">
+            Dead-Letter
+          </mat-button-toggle>
+        </mat-button-toggle-group>
+        <button
+          [disabled]="noMessages$ | async"
+          mat-button
+          color="primary"
+          (click)="receive('peek', queueType.value, messageCount.value)"
+        >
+          Peek
+        </button>
+        <button
+          [disabled]="noMessages$ | async"
+          mat-button
+          color="warn"
+          (click)="receive('receive', queueType.value, messageCount.value)"
+        >
+          Receive/Delete
+        </button>
+        <mat-form-field appearance="fill">
+          <mat-label>Messages</mat-label>
+          <input
+            #messageCount="matInput"
+            matInput
+            type="number"
+            min="1"
+            [max]="maxMessages$ | async"
+            value="1"
+          />
+        </mat-form-field>
         <esb-message
           *ngFor="let message of messages$ | async"
           [message]="message"

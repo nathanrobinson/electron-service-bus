@@ -8,9 +8,42 @@ import { ServiceBusMessage } from "../_models/service-bus-message";
 export class ServiceBusClientService {
   constructor(private _httpClient: HttpClient) {}
 
-  peekQueue(queueId: string, action: { action: 'peek'|'receive', count: number }): Observable<ServiceBusMessage[]> {
-    const id = queueId || '';
-    var paths = id.split('/');
+  peekSubscription(subscriptionId: string, action: { action: "peek" | "receive"; type: "sub" | "dead-letter"; count: number; }): Observable<ServiceBusMessage[]> {
+    var paths = subscriptionId.split('/');
+    const namespaceName = paths[8];
+    if (!namespaceName) {
+      return of([]);
+    }
+    const topicName = paths[10];
+    if (!topicName) {
+      return of([]);
+    }
+    const subscriptionName = paths[12];
+    if (!subscriptionName) {
+      return of([]);
+    }
+
+    if (action.count <= 0) {
+      return of([]);
+    }
+
+    const url = `https://${namespaceName}.servicebus.windows.net/${topicName}/subscriptions/${subscriptionName}${action.type === 'sub' ? '' : '/$deadletterqueue'}`;
+
+    var tasks = Array.from(
+      {length: action.count},
+      _ => this.peekInternal(url, action.action)
+    );
+
+    return merge(...tasks)
+      .pipe(
+        reduce((buffer, message) => {
+          buffer.push(message);
+          return buffer;
+        }, new Array<ServiceBusMessage>()));
+  }
+
+  peekQueue(queueId: string, action: { action: 'peek'|'receive'; type: 'queue'|'dead-letter'; count: number; }): Observable<ServiceBusMessage[]> {
+    var paths = queueId.split('/');
     const namespaceName = paths[8];
     if (!namespaceName) {
       return of([]);
@@ -24,9 +57,11 @@ export class ServiceBusClientService {
       return of([]);
     }
 
+    const url = `https://${namespaceName}.servicebus.windows.net/${queueName}${action.type === 'queue' ? '' : '/$deadletterqueue'}`;
+
     var tasks = Array.from(
       {length: action.count},
-      _ => this.peekInternal(`https://${namespaceName}.servicebus.windows.net/${queueName}`, action.action)
+      _ => this.peekInternal(url, action.action)
     );
 
     return merge(...tasks)
@@ -48,12 +83,11 @@ export class ServiceBusClientService {
     }
 
     let release = of('');
-    var message: ServiceBusMessage = {
+    const message: ServiceBusMessage = {
       body: response.body || '',
       lockUri: response.headers.get('Location') || '',
       brokerProperties: JSON.parse(response.headers.get('BrokerProperties') || ''),
-      priority: response.headers.get('Priority') || '',
-      customer: response.headers.get('Customer') || ''
+      applicationProperties: {}
     };
 
     if (!!message.lockUri) {
@@ -62,6 +96,11 @@ export class ServiceBusClientService {
       } else {
         release = this._httpClient.delete(message.lockUri, {responseType: 'text'});
       }
+    }
+
+    const ignoreHeaders = ['brokerproperties', 'content-type', 'server', 'strict-transport-security', 'transfer-encoding', 'location'];
+    for (let header of response.headers.keys().filter(k => !ignoreHeaders.includes(k))) {
+      message.applicationProperties[header] = response.headers.get(header) || '';
     }
 
     return release.pipe(map(_ => message));

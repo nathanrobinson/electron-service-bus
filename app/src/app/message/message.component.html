@@ -19,30 +19,26 @@
     >
       <mat-expansion-panel>
         <mat-expansion-panel-header>
-          <mat-panel-title> Message Properties </mat-panel-title>
-        </mat-expansion-panel-header>
-        <div fxLayout="row wrap" fxLayout.md="column" fxLayoutGap="10px">
-          <ng-container *ngFor="let property of message | keyvalue">
-            <mat-form-field
-              appearance="fill"
-              *ngIf="
-                property.key !== 'brokerProperties' && property.key !== 'body'
-              "
-            >
-              <mat-label>{{ property.key }}</mat-label>
-              <input disabled matInput [value]="property.value" />
-            </mat-form-field>
-          </ng-container>
-        </div>
-      </mat-expansion-panel>
-      <mat-expansion-panel *ngIf="!!message.brokerProperties">
-        <mat-expansion-panel-header>
           <mat-panel-title> Broker Properties </mat-panel-title>
         </mat-expansion-panel-header>
         <div fxLayout="row wrap" fxLayout.md="column" fxLayoutGap="10px">
           <mat-form-field
             appearance="fill"
             *ngFor="let property of message.brokerProperties | keyvalue"
+          >
+            <mat-label>{{ property.key }}</mat-label>
+            <input disabled matInput [value]="property.value" />
+          </mat-form-field>
+        </div>
+      </mat-expansion-panel>
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title> Application Properties </mat-panel-title>
+        </mat-expansion-panel-header>
+        <div fxLayout="row wrap" fxLayout.md="column" fxLayoutGap="10px">
+          <mat-form-field
+            appearance="fill"
+            *ngFor="let property of message.applicationProperties | keyvalue"
           >
             <mat-label>{{ property.key }}</mat-label>
             <input disabled matInput [value]="property.value" />

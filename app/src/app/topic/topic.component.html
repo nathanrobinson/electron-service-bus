@@ -1,2 +1,53 @@
-<h1>Topic: {{ topic?.name || "" }}</h1>
-<pre>{{ topic | json }}</pre>
+<mat-card class="message-card" *ngIf="noTopic$ | async">
+  <mat-card-header>
+    <mat-card-title>Service Bus Topic</mat-card-title>
+  </mat-card-header>
+</mat-card>
+<mat-card class="message-card" *ngIf="hasTopic$ | async">
+  <mat-card-header>
+    <mat-card-title>Service Bus Topic</mat-card-title>
+    <mat-card-subtitle>{{ topicName$ | async }}</mat-card-subtitle>
+  </mat-card-header>
+  <mat-card-content>
+    <div class="example-action-buttons">
+      <button mat-button (click)="accordion.openAll()">Expand All</button>
+      <button mat-button (click)="accordion.closeAll()">Collapse All</button>
+    </div>
+    <mat-accordion
+      #accordion="matAccordion"
+      class="example-headers-align"
+      multi
+    >
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title> Topic Properties </mat-panel-title>
+        </mat-expansion-panel-header>
+        <div fxLayout="row wrap" fxLayout.md="column" fxLayoutGap="10px">
+          <mat-form-field
+            appearance="fill"
+            *ngFor="let property of properties$ | async"
+          >
+            <mat-label>{{ property.key }}</mat-label>
+            <input disabled matInput [value]="property.value" />
+          </mat-form-field>
+        </div>
+      </mat-expansion-panel>
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title> Topic Counts </mat-panel-title>
+        </mat-expansion-panel-header>
+        <div fxLayout="row wrap" fxLayout.md="column" fxLayoutGap="10px">
+          <mat-form-field
+            appearance="fill"
+            *ngFor="let property of countDetails$ | async"
+          >
+            <mat-label>{{ property.key }}</mat-label>
+            <input disabled matInput [value]="property.value" />
+          </mat-form-field>
+        </div>
+      </mat-expansion-panel>
+    </mat-accordion>
+
+    <router-outlet></router-outlet>
+  </mat-card-content>
+</mat-card>
