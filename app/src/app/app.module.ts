@@ -28,6 +28,7 @@ import { QueueComponent } from './queue/queue.component';
 import { SubscriptionComponent } from './subscription/subscription.component';
 import { MessageComponent } from './message/message.component';
 import { FormsModule } from '@angular/forms';
+import { ResizableModule } from 'angular-resizable-element';
 
 @NgModule({
   declarations: [
@@ -60,7 +61,8 @@ import { FormsModule } from '@angular/forms';
     MatSnackBarModule,
     MatToolbarModule,
     MatTooltipModule,
-    MatTreeModule
+    MatTreeModule,
+    ResizableModule
   ],
   providers: [
     { provide: MAT_SNACK_BAR_DEFAULT_OPTIONS, useValue: {duration: 2500} },

@@ -1,9 +1,5 @@
-.esb-menu-backdrop {
-  background-color: rgba($color: #000000, $alpha: 0.5);
-  border-right: 1px solid black;
-  width: 350px;
-  overflow: auto;
-}
+@import "../styles.scss";
+
 .esb-spacer {
   flex: 1 1 auto;
 }
@@ -16,6 +12,37 @@
   overflow: auto;
   display: flex;
   flex-direction: column;
+}
+
+#sidenav-handle {
+  cursor: col-resize;
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background-color: #aaaaaa;
+  &:hover {
+    @include theme(background-color, accent);
+    width: 5px;
+  }
+  transition: all 500ms ease-in-out;
+}
+
+#menu-container {
+  margin-right: 5px;
+  min-width: 250px;
+}
+
+#esb-menu-sidebar {
+  height: 100%;
+  overflow: none;
+  margin-right: 5px;
+}
+
+esb-menu {
+  width: 100%;
+  overflow: auto;
 }
 
 mat-sidenav-container {

@@ -55,6 +55,17 @@ $dark-theme: mat-dark-theme(
   @include angular-material-color($dark-theme);
 }
 
+@mixin theme($property: null, $key: null) {
+  & {
+    #{$property}: mat-color(map_get($app-theme, $key));
+  }
+
+  :host-context(.esb-dark-theme) &,
+  .esb-dark-theme & {
+    #{$property}: mat-color(map_get($dark-theme, $key));
+  }
+}
+
 /* You can add global styles to this file, and also import other style files */
 
 html,

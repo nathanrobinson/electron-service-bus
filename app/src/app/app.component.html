@@ -23,9 +23,27 @@
     >
   </mat-toolbar>
 
-  <mat-sidenav-container>
-    <mat-sidenav #sidebar mode="side" opened class="esb-menu-backdrop">
-      <esb-menu></esb-menu>
+  <mat-sidenav-container #navContainer>
+    <mat-sidenav
+      id="esb-menu-sidebar"
+      #sidebar
+      mode="side"
+      opened
+      mwlResizable
+      [enableGhostResize]="true"
+      (resizeEnd)="
+        menuContainer.style.width = $event.rectangle.width + 'px';
+        navContainer.updateContentMargins()
+      "
+    >
+      <div #menuContainer id="menu-container">
+        <esb-menu></esb-menu>
+      </div>
+      <div
+        id="sidenav-handle"
+        mwlResizeHandle
+        [resizeEdges]="{ right: true }"
+      ></div>
     </mat-sidenav>
     <mat-sidenav-content>
       <article>
