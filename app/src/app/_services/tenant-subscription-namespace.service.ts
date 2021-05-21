@@ -58,7 +58,7 @@ export class TenantSubscriptionNamespaceService {
     if (element instanceof TopicNode && !!element?.id) {
       return from(this._serviceBusManagementService.getTopicSubscriptions(element.id))
               .pipe(
-                map(tss => tss?.map((s => new TopicSubscriptionNode(s)) || [])),
+                map(tss => tss?.map((s => new TopicSubscriptionNode(element.topic, s)) || [])),
                 tap(tss => element.children = tss));
     }
 

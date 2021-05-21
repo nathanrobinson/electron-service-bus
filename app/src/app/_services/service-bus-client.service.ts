@@ -1,14 +1,14 @@
 import { HttpClient, HttpResponse } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { EMPTY, merge, Observable, of } from "rxjs";
-import { expand, map, mergeAll, reduce, switchMap } from "rxjs/operators";
+import { map, switchMap } from "rxjs/operators";
 import { ServiceBusMessage } from "../_models/service-bus-message";
 
 @Injectable({providedIn: 'root'})
 export class ServiceBusClientService {
   constructor(private _httpClient: HttpClient) {}
 
-  peekSubscription(subscriptionId: string, action: { action: "peek" | "receive"; type: "sub" | "dead-letter"; count: number; }): Observable<ServiceBusMessage[]> {
+  peekSubscription(subscriptionId: string, action: { action: 'peek'|'receive'; type: 'sub'|'dead-letter'; count: number; }): Observable<ServiceBusMessage[]> {
     var paths = subscriptionId.split('/');
     const namespaceName = paths[8];
     if (!namespaceName) {
@@ -29,17 +29,7 @@ export class ServiceBusClientService {
 
     const url = `https://${namespaceName}.servicebus.windows.net/${topicName}/subscriptions/${subscriptionName}${action.type === 'sub' ? '' : '/$deadletterqueue'}`;
 
-    var tasks = Array.from(
-      {length: action.count},
-      _ => this.peekInternal(url, action.action)
-    );
-
-    return merge(...tasks)
-      .pipe(
-        reduce((buffer, message) => {
-          buffer.push(message);
-          return buffer;
-        }, new Array<ServiceBusMessage>()));
+    return this.doPeek(url, action);
   }
 
   peekQueue(queueId: string, action: { action: 'peek'|'receive'; type: 'queue'|'dead-letter'; count: number; }): Observable<ServiceBusMessage[]> {
@@ -59,17 +49,23 @@ export class ServiceBusClientService {
 
     const url = `https://${namespaceName}.servicebus.windows.net/${queueName}${action.type === 'queue' ? '' : '/$deadletterqueue'}`;
 
+    return this.doPeek(url, action);
+  }
+
+  private doPeek(url: string, action: { action: 'peek'|'receive'; count: number; }) {
     var tasks = Array.from(
       {length: action.count},
       _ => this.peekInternal(url, action.action)
     );
 
+    const messages = new Array<ServiceBusMessage>();
+
     return merge(...tasks)
       .pipe(
-        reduce((buffer, message) => {
-          buffer.push(message);
-          return buffer;
-        }, new Array<ServiceBusMessage>()));
+        map(message => {
+          messages.push(message);
+          return messages;
+        }));
   }
 
   private peekInternal(uri: string, action: 'peek'|'receive'): Observable<ServiceBusMessage> {

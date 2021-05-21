@@ -84,12 +84,12 @@ export class MenuDataSource implements DataSource<DynamicMenuNode> {
 
                 // notify the change
                 this.dataChange.next(this.data);
-                node.isLoading = false;
             },
             error: error => {
                 console.error(error);
                 this._snackBar.open('Could not load node child', 'Dismiss');
-            }
+            },
+            complete: () => { node.isLoading = false; }
         });
     }
 

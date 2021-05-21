@@ -1,9 +1,9 @@
-import { SBSubscription } from "@azure/arm-servicebus/esm/models";
+import { SBSubscription, SBTopic } from "@azure/arm-servicebus/esm/models";
 import { CustomNode } from "./custom-node";
 import { IProperties } from "./properties";
 
 export class TopicSubscriptionNode extends CustomNode {
-    constructor(public subscription: IProperties<SBSubscription>) {
+    constructor(public topic: IProperties<SBTopic>, public subscription: IProperties<SBSubscription>) {
         super(subscription.id, `${subscription.name || ''} (${subscription.properties?.messageCount || 0})`);
         this.icon = 'subscriptions';
         this.tooltip = `Active: ${subscription.properties?.countDetails?.activeMessageCount || 0}

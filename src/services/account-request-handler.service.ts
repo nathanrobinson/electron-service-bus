@@ -27,7 +27,6 @@ export class AccountRequestHandlerService {
         const token = await this.getToken('https://management.azure.com');
         if (!!token?.token) {
             var decoded = jwt_decode(token.token);
-            console.log(decoded);
             return (<any>decoded)?.unique_name;
         }
         return '';

@@ -21,7 +21,9 @@ export class TenantSubscriptionService {
       return this._httpClient.get<INextLink<Subscription>>(this._baseUrl, {params: {'api-version': this._version}})
         .pipe(
           timeout(10000),
-          expand(s => !!s?.nextLink ? this._httpClient.get<INextLink<Subscription>>(s.nextLink) : EMPTY),
+          expand(s => !!s?.nextLink ? this._httpClient.get<INextLink<Subscription>>(s.nextLink).pipe(
+            timeout(10000),
+            catchError(error => {console.error(error); return EMPTY;})) : EMPTY),
           map(s => s?.value),
           reduce((acc, value) => {
             if (!!value) {

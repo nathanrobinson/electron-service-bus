@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { SBNamespace, SBQueue, SBSubscription, SBTopic } from '@azure/arm-servicebus/esm/models';
 import { EMPTY, Observable, of } from 'rxjs';
-import { catchError, expand, map, reduce, tap, timeout } from 'rxjs/operators';
+import { catchError, expand, map, timeout } from 'rxjs/operators';
 import { INextLink } from '../_models/next-link';
 import { IProperties } from '../_models/properties';
 
@@ -16,31 +16,28 @@ export class ServiceBusManagementService {
   private _serviceBusProviderUrl = '/providers/Microsoft.ServiceBus';
   private _apiVersion = '2017-04-01';
 
-  private _namespaces: {[key: string]: Array<SBNamespace>} = {};
-
   getNamespaces(subscriptionId: string | undefined): Observable<Array<SBNamespace>> {
     // https://management.azure.com/subscriptions/{guid}/providers/Microsoft.ServiceBus/namespaces?api-version=2017-04-01
     if (!subscriptionId) {
       return of([]);
     }
 
-    if (!this._namespaces[subscriptionId]) {
-      const uri = `${this._baseUrl}${subscriptionId}${this._serviceBusProviderUrl}/namespaces`;
-      return this._httpClient.get<INextLink<SBNamespace>>(uri, {params: {'api-version': this._apiVersion}})
-        .pipe(
+    const namespaces = new Array<SBNamespace>();
+
+    const uri = `${this._baseUrl}${subscriptionId}${this._serviceBusProviderUrl}/namespaces`;
+    return this._httpClient.get<INextLink<SBNamespace>>(uri, {params: {'api-version': this._apiVersion}})
+      .pipe(
+        timeout(10000),
+        expand(s => !!s?.nextLink ? this._httpClient.get<INextLink<SBNamespace>>(s.nextLink).pipe(
           timeout(10000),
-          expand(s => !!s?.nextLink ? this._httpClient.get<INextLink<SBNamespace>>(s.nextLink) : EMPTY),
-          map(s => s?.value),
-          reduce((acc, value) => {
-            if (!!value) {
-              acc.push(...value);
-            }
-            return acc;
-          }, new Array<SBNamespace>()),
-          catchError(error => {console.error(error); return [];}),
-          tap(s => this._namespaces[subscriptionId] = s));
-    }
-    return of(this._namespaces[subscriptionId] || []);
+          catchError(error => {console.error(error); return EMPTY;})) : EMPTY),
+        map(s => {
+          if (!!s?.value) {
+            namespaces.push(...s.value);
+          }
+          return namespaces;
+        }),
+        catchError(error => {console.error(error); return of(namespaces);}));
   }
 
   getTopics(namespaceId: string | undefined): Observable<Array<IProperties<SBTopic>>> {
@@ -50,18 +47,22 @@ export class ServiceBusManagementService {
       return of([]);
     }
 
+    const topics = new Array<IProperties<SBTopic>>();
+
     const uri = `${this._baseUrl}${namespaceId}${namespaceId.endsWith('/topics') ? '' : '/topics'}`;
     return this._httpClient.get<INextLink<IProperties<SBTopic>>>(uri, {params: {'api-version': this._apiVersion}})
       .pipe(
         timeout(10000),
-        expand(s => !!s?.nextLink ? this._httpClient.get<INextLink<IProperties<SBTopic>>>(s.nextLink) : EMPTY),
-        map(s => s?.value),
-        reduce((acc, value) => {
-          if (!!value) {
-            acc.push(...value);
+        expand(s => !!s?.nextLink ? this._httpClient.get<INextLink<IProperties<SBTopic>>>(s.nextLink).pipe(
+          timeout(10000),
+          catchError(error => {console.error(error); return EMPTY;})) : EMPTY),
+        map(s => {
+          if (!!s?.value) {
+            topics.push(...s.value);
           }
-          return acc;
-        }, new Array<IProperties<SBTopic>>()));
+          return topics;
+        }),
+        catchError(error => {console.error(error); return of(topics);}));
   }
 
   getQueues(namespaceId: string | undefined): Observable<Array<IProperties<SBQueue>>> {
@@ -70,19 +71,22 @@ export class ServiceBusManagementService {
       return of([]);
     }
 
+    const queues = new Array<IProperties<SBQueue>>();
+
     const uri = `${this._baseUrl}${namespaceId}${namespaceId.endsWith('/queues') ? '' : '/queues'}`;
     return this._httpClient.get<INextLink<IProperties<SBQueue>>>(uri, {params: {'api-version': this._apiVersion}})
       .pipe(
         timeout(10000),
-        expand(s => !!s?.nextLink ? this._httpClient.get<INextLink<IProperties<SBQueue>>>(s.nextLink) : EMPTY),
-        map(s => s?.value),
-        reduce((acc, value) => {
-          if (!!value) {
-            acc.push(...value);
+        expand(s => !!s?.nextLink ? this._httpClient.get<INextLink<IProperties<SBQueue>>>(s.nextLink).pipe(
+          timeout(10000),
+          catchError(error => {console.error(error); return EMPTY;})) : EMPTY),
+        map(s => {
+          if (!!s?.value) {
+            queues.push(...s.value);
           }
-          return acc;
-        }, new Array<IProperties<SBQueue>>()),
-        catchError(error => {console.error(error); return [];}));
+          return queues;
+        }),
+        catchError(error => {console.error(error); return of(queues);}));
   }
 
   getTopicSubscriptions(topicId: string | undefined): Observable<Array<IProperties<SBSubscription>>> {
@@ -91,18 +95,21 @@ export class ServiceBusManagementService {
       return of([]);
     }
 
+    const subscriptions = new Array<IProperties<SBSubscription>>();
+
     const uri = `${this._baseUrl}${topicId}/subscriptions`;
     return this._httpClient.get<INextLink<IProperties<SBSubscription>>>(uri, {params: {'api-version': this._apiVersion}})
       .pipe(
         timeout(10000),
-        expand(s => !!s?.nextLink ? this._httpClient.get<INextLink<IProperties<SBSubscription>>>(s.nextLink) : EMPTY),
-        map(s => s?.value),
-        reduce((acc, value) => {
-          if (!!value) {
-            acc.push(...value);
+        expand(s => !!s?.nextLink ? this._httpClient.get<INextLink<IProperties<SBSubscription>>>(s.nextLink).pipe(
+          timeout(10000),
+          catchError(error => {console.error(error); return EMPTY;})) : EMPTY),
+        map(s => {
+          if (!!s?.value) {
+            subscriptions.push(...s.value);
           }
-          return acc;
-        }, new Array<IProperties<SBSubscription>>()),
-        catchError(error => {console.error(error); return [];}));
+          return subscriptions;
+        }),
+        catchError(error => {console.error(error); return of(subscriptions);}));
   }
 }
