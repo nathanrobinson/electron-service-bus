@@ -1,5 +1,6 @@
 import { DataSource, CollectionViewer, SelectionChange } from "@angular/cdk/collections";
 import { FlatTreeControl } from "@angular/cdk/tree";
+import { EventEmitter } from "@angular/core";
 import { MatSnackBar } from "@angular/material/snack-bar";
 import { BehaviorSubject, Observable, merge } from "rxjs";
 import { map } from "rxjs/operators";
@@ -13,6 +14,7 @@ import { DynamicMenuNode } from "./menu-node";
 export class MenuDataSource implements DataSource<DynamicMenuNode> {
 
     dataChange = new BehaviorSubject<DynamicMenuNode[]>([]);
+    nodeToggled = new EventEmitter<void>();
 
     set rawData(value: CustomNode[]) {
         this.data = value?.map(n => new DynamicMenuNode(n, 0, true, false));
@@ -55,10 +57,8 @@ export class MenuDataSource implements DataSource<DynamicMenuNode> {
      * Toggle the node, remove from display list
      */
     toggleNode(node: DynamicMenuNode, expand: boolean) {
-        const index = this.data.indexOf(node);
-        if (index < 0) { // If no children, or cannot find the node, no op
-          return;
-        }
+      const index = this.data.indexOf(node);
+      if (index >= 0) { // If no children, or cannot find the node, no op
         node.isLoading = true;
         this._nodeService.getChildren(node.item)
         .subscribe({
@@ -91,16 +91,18 @@ export class MenuDataSource implements DataSource<DynamicMenuNode> {
             },
             complete: () => { node.isLoading = false; }
         });
+      }
+      this.nodeToggled.emit();
     }
 
     private isRoutable(node: CustomNode): boolean {
-        return node instanceof QueueNode ||
-               node instanceof TopicSubscriptionNode ||
-               node instanceof TopicNode;
+      return node instanceof QueueNode ||
+            node instanceof TopicSubscriptionNode ||
+            node instanceof TopicNode;
     }
 
     private isExpandable(node: CustomNode): boolean {
-        return !(node instanceof QueueNode ||
-               node instanceof TopicSubscriptionNode);
+      return !(node instanceof QueueNode ||
+            node instanceof TopicSubscriptionNode);
     }
   }

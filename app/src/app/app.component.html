@@ -23,7 +23,7 @@
     >
   </mat-toolbar>
 
-  <mat-sidenav-container #navContainer [autosize]="true">
+  <mat-sidenav-container #navContainer>
     <mat-sidenav
       id="esb-menu-sidebar"
       #sidebar
@@ -37,7 +37,7 @@
       "
     >
       <div #menuContainer id="menu-container">
-        <esb-menu></esb-menu>
+        <esb-menu (nodeToggle)="navContainer.updateContentMargins()"></esb-menu>
       </div>
       <div
         id="sidenav-handle"

@@ -1,11 +1,7 @@
 import { FlatTreeControl } from '@angular/cdk/tree';
-import { Component, OnInit } from '@angular/core';
+import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { filter, switchMap } from 'rxjs/operators';
-import { CustomNode } from '../_models/custom-node';
-import { QueueNode } from '../_models/queue-node';
-import { TopicNode } from '../_models/topic-node';
-import { TopicSubscriptionNode } from '../_models/topic-subscription-node';
 import { AuthServiceService } from '../_services/auth-service.service';
 import { TenantSubscriptionNamespaceService } from '../_services/tenant-subscription-namespace.service';
 import { DynamicMenuNode } from './menu-node';
@@ -23,8 +19,11 @@ export class MenuComponent implements OnInit {
   treeControl = new FlatTreeControl<DynamicMenuNode>(this.getLevel, this.isExpandable);
   nodes: MenuDataSource;
 
+  @Output() nodeToggle: EventEmitter<void>;
+
   constructor(subs: TenantSubscriptionNamespaceService, auth: AuthServiceService, snack: MatSnackBar) {
     this.nodes = new MenuDataSource(this.treeControl, subs, snack);
+    this.nodeToggle = this.nodes.nodeToggled;
     auth.authenticated.pipe(
       filter(x => !!x),
       switchMap(() => subs.getChildren())
