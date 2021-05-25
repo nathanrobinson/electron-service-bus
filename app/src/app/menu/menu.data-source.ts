@@ -92,7 +92,7 @@ export class MenuDataSource implements DataSource<DynamicMenuNode> {
             complete: () => { node.isLoading = false; }
         });
       }
-      this.nodeToggled.emit();
+    this.nodeToggled.emit();
     }
 
     private isRoutable(node: CustomNode): boolean {

@@ -57,12 +57,12 @@ $dark-theme: mat-dark-theme(
 
 @mixin theme($property: null, $key: null) {
   & {
-    #{$property}: mat-color(map_get($app-theme, $key));
+    #{$property}: mat-color(map-get($app-theme, $key));
   }
 
   :host-context(.esb-dark-theme) &,
   .esb-dark-theme & {
-    #{$property}: mat-color(map_get($dark-theme, $key));
+    #{$property}: mat-color(map-get($dark-theme, $key));
   }
 }
 
@@ -75,4 +75,21 @@ body {
 body {
   margin: 0;
   font-family: Roboto, "Helvetica Neue", sans-serif;
+}
+
+.esb-dim-hover {
+  &:not(:hover) {
+    color: map-get($mat-grey, 500) !important;
+  }
+
+  &:hover {
+    &.mat-accent {
+      color: mat-color(map-get($app-theme, "accent"));
+
+      :host-context(.esb-dark-theme) &,
+      .esb-dark-theme & {
+        color: mat-color(map-get($dark-theme, "accent"));
+      }
+    }
+  }
 }

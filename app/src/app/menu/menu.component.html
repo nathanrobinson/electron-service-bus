@@ -11,6 +11,7 @@
       [routerLink]="node.item.id"
       [state]="{ data: node.item }"
       [matTooltip]="node.item.tooltip"
+      role="button"
     >
       <mat-icon color="primary">{{ node.item.icon }}</mat-icon>
       {{ node.item.label }}
@@ -19,6 +20,15 @@
       <mat-icon color="primary">{{ node.item.icon }}</mat-icon>
       {{ node.item.label }}
     </span>
+    <button
+      mat-icon-button
+      [attr.aria-label]="'Refresh ' + node.item.label"
+      role="button"
+      (click)="refreshNode(node)"
+      title="Refresh"
+    >
+      <mat-icon color="accent" class="esb-dim-hover"> sync </mat-icon>
+    </button>
   </mat-tree-node>
   <mat-tree-node
     *matTreeNodeDef="let node; when: hasChild"
@@ -40,6 +50,7 @@
       [routerLink]="node.item.id"
       [state]="{ data: node.item }"
       [matTooltip]="node.item.tooltip"
+      role="button"
     >
       <mat-icon color="primary">{{ node.item.icon }}</mat-icon>
       {{ node.item.label }}
@@ -48,6 +59,15 @@
       <mat-icon color="primary">{{ node.item.icon }}</mat-icon>
       {{ node.item.label }}
     </span>
+    <button
+      mat-icon-button
+      [attr.aria-label]="'Refresh ' + node.item.label"
+      role="button"
+      (click)="refreshNode(node)"
+      title="Refresh"
+    >
+      <mat-icon color="accent" class="esb-dim-hover"> sync </mat-icon>
+    </button>
     <mat-progress-spinner
       *ngIf="node.isLoading"
       mode="indeterminate"

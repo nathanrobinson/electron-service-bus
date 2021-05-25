@@ -37,4 +37,15 @@ export class MenuComponent implements OnInit {
   }
 
   ngOnInit(): void { }
+
+  refreshNode(node: DynamicMenuNode) {
+    const isExpanded = this.treeControl.isExpanded(node);
+    this.treeControl.collapse(node);
+
+    node.item.children = undefined;
+
+    if (isExpanded) {
+      this.treeControl.expand(node);
+    }
+  }
 }

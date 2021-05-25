@@ -3,6 +3,7 @@
 ## Usage
 
 Before running you should be logged into Azure. To log in via the cli just do `az login`.
+To send or receive messages, your account must have `Azure Service Bus Data Owner` permissions for the service bus object.
 
 1. Run `yarn` from root.
 2. Run `yarn` from ./app.
