@@ -14,7 +14,7 @@ To send or receive messages, your account must have `Azure Service Bus Data Owne
 
 1. ~~peek, receive, and send messages to/from queues and subscriptions~~
 2. ~~support dead-letter queues~~
-3. refresh data
+3. ~~refresh data~~
 4. delete queues, topics, and subscriptions
 5. add and edit queues, topics, and subscriptions
 6. forward queues and subscriptions
