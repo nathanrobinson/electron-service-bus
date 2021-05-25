@@ -29,6 +29,7 @@ import { SubscriptionComponent } from './subscription/subscription.component';
 import { MessageComponent } from './message/message.component';
 import { FormsModule } from '@angular/forms';
 import { ResizableModule } from 'angular-resizable-element';
+import { SendMessageComponent } from './send-message/send-message.component';
 
 @NgModule({
   declarations: [
@@ -37,7 +38,8 @@ import { ResizableModule } from 'angular-resizable-element';
     TopicComponent,
     QueueComponent,
     SubscriptionComponent,
-    MessageComponent
+    MessageComponent,
+    SendMessageComponent
   ],
   imports: [
     BrowserModule,

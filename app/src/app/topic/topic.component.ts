@@ -13,6 +13,7 @@ import { IProperties } from '../_models/properties';
 export class TopicComponent implements OnInit {
   topic$: Observable<IProperties<SBTopic>>;
   topicName$: Observable<string>;
+  topicId$: Observable<string>;
   properties$: Observable<{key: string, value: any}[]>;
   countDetails$: Observable<{key: string, value: any}[]>;
   hasTopic$: Observable<boolean>;
@@ -36,6 +37,7 @@ export class TopicComponent implements OnInit {
     this.hasTopic$ = this.topic$.pipe(map(q => !!q));
     this.noTopic$ = concat(of(true), this.hasTopic$.pipe(map(q => !q)));
     this.topicName$ = this.topic$.pipe(map(q => q.name || ''));
+    this.topicId$ = this.topic$.pipe(map(q => q.id || ''));
    }
 
   ngOnInit(): void { }

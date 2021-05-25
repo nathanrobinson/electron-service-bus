@@ -46,8 +46,14 @@
           </mat-form-field>
         </div>
       </mat-expansion-panel>
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title> Send Message </mat-panel-title>
+        </mat-expansion-panel-header>
+        <esb-send-message [topicId]="topicId$ | async"></esb-send-message>
+      </mat-expansion-panel>
     </mat-accordion>
-
-    <router-outlet></router-outlet>
   </mat-card-content>
 </mat-card>
+
+<router-outlet></router-outlet>
