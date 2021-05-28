@@ -7,12 +7,19 @@ import { ServiceBusMessage } from "../_models/service-bus-message";
 
 type QueueId = {namespace: string, queueName: string};
 type TopicId = {namespace: string, topicName: string, subscription: string};
+type DeadLetterType = 'dead-letter';
+type QueueAction = 'peek' | 'receive';
+type QueueType = 'queue' | DeadLetterType;
+type SubscriptionType = 'sub' | DeadLetterType;
+type ActionCountType = { action: QueueAction, count: number };
+type QueueTypeAction = ActionCountType & { type: QueueType };
+type SubscriptionTypeAction = ActionCountType & { type: SubscriptionType };
 
 @Injectable({providedIn: 'root'})
 export class ServiceBusClientService {
   constructor(private _httpClient: HttpClient) {}
 
-  peekSubscription(subscriptionId: string, action: { action: 'peek'|'receive'; type: 'sub'|'dead-letter'; count: number; }): Observable<ServiceBusMessage[]> {
+  peekSubscription(subscriptionId: string, action: SubscriptionTypeAction): Observable<ServiceBusMessage[]> {
     var paths = this.parseId(subscriptionId);
     if (!this.isTopicId(paths)) {
       return of([]);
@@ -27,7 +34,7 @@ export class ServiceBusClientService {
     return this.doPeek(url, action);
   }
 
-  peekQueue(queueId: string, action: { action: 'peek'|'receive'; type: 'queue'|'dead-letter'; count: number; }): Observable<ServiceBusMessage[]> {
+  peekQueue(queueId: string, action: QueueTypeAction): Observable<ServiceBusMessage[]> {
     var paths = this.parseId(queueId);
     if (!this.isQueueId(paths)) {
       return of([]);
@@ -81,7 +88,7 @@ export class ServiceBusClientService {
     return {namespace, topicName, subscription}
   }
 
-  private doPeek(url: string, action: { action: 'peek'|'receive'; count: number; }) {
+  private doPeek(url: string, action: ActionCountType) {
     var tasks = Array.from(
       {length: action.count},
       _ => this.peekInternal(url, action.action)
@@ -97,12 +104,12 @@ export class ServiceBusClientService {
         }));
   }
 
-  private peekInternal(uri: string, action: 'peek'|'receive'): Observable<ServiceBusMessage> {
+  private peekInternal(uri: string, action: QueueAction): Observable<ServiceBusMessage> {
     return this._httpClient.post(`${uri}/messages/head?timeout=60`, {}, {observe: 'response', responseType: 'text'})
       .pipe(switchMap(x => this.releaseAndReturnMessage(x, action)));
   }
 
-  private releaseAndReturnMessage(response: HttpResponse<string>, action: 'peek'|'receive'): Observable<ServiceBusMessage> {
+  private releaseAndReturnMessage(response: HttpResponse<string>, action: QueueAction): Observable<ServiceBusMessage> {
     if (response?.status !== 201) {
       return EMPTY;
     }
